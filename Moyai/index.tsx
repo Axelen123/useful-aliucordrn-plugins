@@ -13,6 +13,8 @@ import SettingsPage from "./settingsPage";
 import { Message, ReactionEmoji } from "discord-types/general";
 import { Logger } from "aliucord/utils/Logger";
 
+const { AppState } = ReactNative;
+
 const MOYAI = "🗿";
 const MOYAI_URL =
   "https://raw.githubusercontent.com/MeguminSama/VencordPlugins/main/plugins/moyai/moyai.mp3";
@@ -51,6 +53,7 @@ function sleep(ms) {
 
 export interface MoyaiSettings {
   ignoreBots: boolean;
+  triggerWhenUnfocused: boolean;
   volume: number;
 }
 
@@ -64,10 +67,14 @@ export default class Moyai extends Plugin<MoyaiSettings> {
 
   private updateSettings() {
     this.realSettings.ignoreBots = this.settings.get("ignoreBots", true);
+    this.realSettings.triggerWhenUnfocused = this.settings.get("triggerWhenUnfocused", false);
     this.realSettings.volume = this.settings.get("volume", 0.5);
   }
 
   async boom() {
+    if (AppState.currentState != "active" && !this.realSettings.triggerWhenUnfocused) {
+      return;
+    }
     console.log("🗿 vine boom! 🗿");
     try {
       soundId++;

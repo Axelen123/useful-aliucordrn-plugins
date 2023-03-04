@@ -52,6 +52,22 @@ export default function page({
           }
         />
         <FormRow
+          label={
+            <Text style={styles.text}>
+              Trigger the 🗿 even when the app is unfocused
+            </Text>
+          }
+          trailing={
+            <FormSwitch
+              value={settings.get("triggerWhenUnfocused", false)}
+              onValueChange={(v) => {
+                settings.set("triggerWhenUnfocused", v);
+                onChange();
+              }}
+            />
+          }
+        />
+        <FormRow
           label={<Text style={styles.text}>Volume</Text>}
           trailing={
             <>
