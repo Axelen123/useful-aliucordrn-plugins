@@ -55,6 +55,7 @@ export interface MoyaiSettings {
   ignoreBots: boolean;
   triggerWhenUnfocused: boolean;
   volume: number;
+  newMessageLimit: number;
 }
 
 // no one steal this k thx
@@ -69,6 +70,7 @@ export default class Moyai extends Plugin<MoyaiSettings> {
     this.realSettings.ignoreBots = this.settings.get("ignoreBots", true);
     this.realSettings.triggerWhenUnfocused = this.settings.get("triggerWhenUnfocused", false);
     this.realSettings.volume = this.settings.get("volume", 0.5);
+    this.realSettings.newMessageLimit = this.settings.get("newMessageLimit", 10);
   }
 
   async boom() {
@@ -98,7 +100,7 @@ export default class Moyai extends Plugin<MoyaiSettings> {
     if (!e.message.content) return;
     if (e.channelId !== SelectedChannelStore.getChannelId()) return;
 
-    const moyaiCount = getMoyaiCount(e.message.content);
+    const moyaiCount = getMoyaiCount(e.message.content, this.realSettings.newMessageLimit);
 
     for (let i = 0; i < moyaiCount; i++) {
       await this.boom();
@@ -177,10 +179,10 @@ function countMatches(sourceString: string, pattern: RegExp) {
 
 const customMoyaiRe = /<a?:\w*moy?ai\w*:\d{17,20}>/gi;
 
-function getMoyaiCount(message: string) {
+function getMoyaiCount(message: string, limit: number) {
   // TODO: match "vine boom" as well
   const count =
     countOccurrences(message, MOYAI) + countMatches(message, customMoyaiRe);
 
-  return Math.min(count, 10);
+  return Math.min(count, limit);
 }

@@ -5,7 +5,7 @@ import { Settings } from "aliucord/api/Settings";
 import { MoyaiSettings } from ".";
 import getStyles from "./styles";
 
-const { FormSection, FormRow, FormLabel, FormSwitch } = Forms;
+const { FormSection, FormRow, FormLabel, FormSwitch, FormInput } = Forms;
 
 // same code but official useSettings explodes for some reason.
 function useSettings<T>(settings: Settings<T>) {
@@ -35,6 +35,7 @@ export default function page({
 
   const settings = useSettings(_settings);
   const vol = settings.get("volume", 0.5);
+  const newMsgLimit = settings.get("newMessageLimit", 10);
 
   return (
     <View style={styles.container}>
@@ -81,6 +82,27 @@ export default function page({
                 }}
               />
             </>
+          }
+        />
+        <FormRow
+          label={
+            <Text style={styles.text}>
+              Max vine booms triggered by new messages
+            </Text>
+          }
+          trailing={
+            <FormInput
+              title="Count"
+              value={newMsgLimit.toString()}
+              onChange={(v) => {
+                let newValue = parseInt(v);
+                if (isNaN(newValue) || newValue < 1) {
+                  newValue = newMsgLimit;
+                }
+                settings.set("newMessageLimit", newValue);
+                onChange();
+              }}
+            />
           }
         />
       </FormSection>
